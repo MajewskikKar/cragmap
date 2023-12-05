@@ -2,6 +2,7 @@ from django.shortcuts import render
 import folium
 from .models import Crag
 # Create your views here.
+# test
 
 def index(request):
 
