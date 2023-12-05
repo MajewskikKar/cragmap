@@ -1,6 +1,8 @@
 from django.shortcuts import render
 import folium
 from .models import Crag
+
+from django.http import HttpResponse
 # Create your views here.
 # test
 
@@ -42,3 +44,6 @@ def index(request):
     }
 
     return(render(request, 'index.html', context))
+
+def szukaj(request):
+    return HttpResponse("Szukajka")
