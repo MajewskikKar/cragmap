@@ -5,8 +5,8 @@ from django.db import models
 class Crag(models.Model):
 
     nazwa = models.CharField(max_length=100)
-    latitude = models.DecimalField(max_digits=9, decimal_places=6)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
     bulder = models.CharField(max_length=1, help_text="0 - droga, 1 - bulder, 2 - inne")
 
     def __str__(self):
