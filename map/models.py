@@ -18,6 +18,13 @@ class Site(models.Model):
     link = models.URLField(max_length=200)
     ocena = models.CharField(max_length=1, help_text="skala od 1 do 5")
     crags = models.ForeignKey(Crag, null=True, on_delete=models.CASCADE)
+
+class Movie(models.Model):
+
+    nazwa_filmu = models.CharField(max_length=100, help_text="Nazwa która będzie wyświetlała się w popupie")
+    link = models.URLField(max_length=200)
+    crags = models.ForeignKey(Crag, null=True, on_delete=models.CASCADE)
+
     def __str__(self):
         return f'{self.nazwa_strony} {self.crags}'
 

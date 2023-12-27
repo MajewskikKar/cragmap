@@ -30,9 +30,10 @@ def index(request):
         name = item.nazwa
         buld = item.bulder
         strony_linki = item.site_set.all() #from related table Site
-
+        popup_data = {'nazwa':name,
+                      'sites':strony_linki}
         #here we edit popups
-        popup_text = render_to_string('popups/popup1.html', {'name': name, 'lat':lat})
+        popup_text = render_to_string('popups/popup1.html', popup_data)
 
         #here we make markers
         if buld == '0': #marker for climbing routes
