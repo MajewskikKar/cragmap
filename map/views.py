@@ -29,9 +29,11 @@ def index(request):
         lon = item.longitude
         name = item.nazwa
         buld = item.bulder
+        opis = item.opis
         strony_linki = item.site_set.all() #from related table Site
         popup_data = {'nazwa':name,
-                      'sites':strony_linki}
+                      'sites':strony_linki,
+                      'opis':opis}
         #here we edit popups
         popup_text = render_to_string('popups/popup1.html', popup_data)
 
