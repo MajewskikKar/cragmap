@@ -3,57 +3,66 @@ import folium
 from .models import Crag
 from folium.plugins import MarkerCluster
 from django.http import HttpResponse
-import os
 from django.template.loader import get_template, render_to_string
-from templates import popups
-# Create your views here.
-# test
-
+import branca
+#main site
 def index(request):
     popup_template = get_template('popups/popup1.html')
+
     #create map object
     m = folium.Map(location = [51.8948, 19.6385],min_zoom =6, zoom_start=3)
-    crags = Crag.objects.all()
+
 
     #store  feature groups
-    feature_bulder= folium.FeatureGroup(name='Buldery',show=True)
-    feature_drogi = folium.FeatureGroup(name='Drogi ubezpieczone')
+
+    feature_bulder= folium.FeatureGroup(name='Buldery')
+    feature_drogi = folium.FeatureGroup(name='Wspinanie sportowe')
+    feature_trad = folium.FeatureGroup(name='Trad')
 
 
     #marker cluster
-    marker_cluster = MarkerCluster().add_to(m)
+
+
+    #marker_cluster = MarkerCluster().add_to(m)
+
+    crags = Crag.objects.all()
     for item in crags:
 
         #here we store values
         lat = item.latitude
         lon = item.longitude
         name = item.nazwa
-        buld = item.bulder
+        bulder = item.bulder
         opis = item.opis
+        wyceny = item.wyceny
+        skala = item.skala
         strony_linki = item.site_set.all() #from related table Site
-        popup_data = {'nazwa':name,
-                      'sites':strony_linki,
-                      'opis':opis}
+        filmy_linki = item.movie_set.all()
+        popup_data = {'name':name, 'bulder':bulder,'opis':opis, 'wyceny':wyceny, 'skala':skala,
+                      'sites':strony_linki, 'movies':filmy_linki}
         #here we edit popups
         popup_text = render_to_string('popups/popup1.html', popup_data)
-
         #here we make markers
-        if buld == '0': #marker for climbing routes
+        if bulder == '0': #marker for climbing routes
             marker = folium.Marker([lon, lat], popup=popup_text, icon=folium.Icon(color="green", prefix = 'fa', icon='chain'),
                                    tooltip=name)
-            marker.add_to(marker_cluster)
-        elif buld == '1': #marker for boulders
+            marker.add_to(feature_drogi)
+        elif bulder == '1': #marker for boulders
             marker = folium.Marker([lon, lat], popup=popup_text, icon=folium.Icon(color="red", prefix = 'fa', icon='chain'),
                                    tooltip=name)
-            marker.add_to(marker_cluster)
-        elif buld =='2': #marker for others?
-            marker = folium.Marker([lon, lat], popup=popup_text, icon=folium.Icon(color="yellow", prefix = 'fa', icon='chain'),
+            marker.add_to(feature_bulder)
+        elif bulder =='2': #marker for trad
+            marker = folium.Marker([lon, lat], popup=popup_text, icon=folium.Icon(color="orange", prefix = 'fa', icon='chain'),
                                    tooltip=name)
-            marker.add_to(marker_cluster)
+            marker.add_to(feature_trad)
 
-    feature_bulder.add_to(marker_cluster)
-    feature_drogi.add_to(marker_cluster)
+    feature_bulder.add_to(m)
+    feature_drogi.add_to(m)
+    feature_trad.add_to(m)
+
     folium.LayerControl().add_to(m)
+
+
     #html representation of map
     m = m._repr_html_()
 
