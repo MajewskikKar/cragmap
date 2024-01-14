@@ -4,7 +4,9 @@ from .models import Crag
 from folium.plugins import MarkerCluster
 from django.http import HttpResponse
 from django.template.loader import get_template, render_to_string
-import branca
+from .filters import MapFilter
+
+
 #main site
 def index(request):
     popup_template = get_template('popups/popup1.html')
@@ -38,8 +40,12 @@ def index(request):
         skala = item.skala
         strony_linki = item.site_set.all() #from related table Site
         filmy_linki = item.movie_set.all()
+        google_maps = f'https://maps.google.com/?q={lon},{lat}'
+        pogoda = f'https://openweathermap.org/weathermap?basemap=map&cities=false&layer=temperature&lat={{lat}}&lon={{lon}}&zoom=10'
+
         popup_data = {'name':name, 'bulder':bulder,'opis':opis, 'wyceny':wyceny, 'skala':skala,
-                      'sites':strony_linki, 'movies':filmy_linki}
+                      'sites':strony_linki, 'movies':filmy_linki, 'google_maps':google_maps}
+
         #here we edit popups
         popup_text = render_to_string('popups/popup1.html', popup_data)
         #here we make markers
@@ -73,4 +79,7 @@ def index(request):
     return(render(request, 'index.html', context))
 
 def szukaj(request):
-    return HttpResponse("Szukajka")
+    all_crags = Crag.objects.all()
+    myfilter = MapFilter()
+    context = {'myfilter':myfilter,'all_crags':all_crags}
+    return (render(request, 'szukajka.html', context))

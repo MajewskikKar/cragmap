@@ -4,24 +4,31 @@ from django.db import models
 #klasa Crag jest główną, obsługującą punkty na mapie. Pozostałe klasy są relacyjne dla Crag.
 class Crag(models.Model):
 
-    EASY = 'łatwe'
-    MEDIUM = 'średnie'
-    HARD = 'trudne'
-    DEF = 'zróżnicowane'
 
     Trudnosci = [
-        (EASY, 'Łatwe'),
-        (MEDIUM, 'Średnie'),
-        (HARD, 'Trudne'),
-        (DEF, 'Zróżnicowane')
+        ('bd', 'uzupełnij'),
+        ('łatwe', 'Łatwe'),
+        ('średnie', 'Średnie'),
+        ('trudne', 'Trudne'),
+        ('zróżnicowane', 'Zróżnicowane')
     ]
+
+    Ilosc_drog = [
+        ('bd','uzupełnij'),
+        ('mały','<20'),
+        ('średni','20-100'),
+        ('duży','>100')
+    ]
+
     nazwa = models.CharField(max_length=100)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
     bulder = models.CharField(max_length=1, help_text="0 - droga, 1 - bulder, 2 - inne")
-    opis = models.TextField(default='uzupelnij', help_text="tutaj wpisz dłuższy opis miejsca")
-    wyceny = models.CharField(max_length=15, choices=Trudnosci, default="uzupelnij")
-    skala = models.CharField(max_length=100, default="uzupelnij", help_text="pojedyncza nazwa - np. piaskowiec, granit, wapień")
+    opis = models.TextField(default='uzupełnij', help_text="tutaj wpisz dłuższy opis miejsca")
+    wyceny = models.CharField(max_length=15, choices=Trudnosci, default="bd")
+    skala = models.CharField(max_length=100, default="uzupełnij", help_text="pojedyncza nazwa - np. piaskowiec, granit, wapień")
+    wysokosc = models.DecimalField(max_digits=3, decimal_places=0, null=True, help_text="podaj bez przcecinków przybliżoną wysokość")
+    ilość_dróg = models.CharField(max_length=10, choices=Ilosc_drog, default='bd')
 
     def __str__(self):
         return self.nazwa

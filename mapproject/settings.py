@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'map.apps.MapConfig',
     'import_export',
+    'django_filters'
 ]
 
 MIDDLEWARE = [
