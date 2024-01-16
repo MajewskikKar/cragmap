@@ -35,19 +35,21 @@ class Crag(models.Model):
 
 #linki do stron internetowych
 class Site(models.Model):
-
     nazwa_strony = models.CharField(max_length=100, help_text="Nazwa która będzie wyświetlała się w popupie")
     link = models.URLField(max_length=200)
     ocena = models.CharField(max_length=1, help_text="skala od 1 do 5")
     crags = models.ForeignKey(Crag, null=True, on_delete=models.CASCADE)
 
+class Route(models.Model):
 
-#filmiki z internetu
+    nazwa_drogi = models.CharField(max_length=200, default="brak")
+    rejon = models.ForeignKey(Crag, on_delete=models.CASCADE, default="brak", null=True)
+
 class Movie(models.Model):
-
     nazwa_filmu = models.CharField(max_length=100, help_text="Nazwa która będzie wyświetlała się w popupie")
     link = models.URLField(max_length=200)
     crags = models.ForeignKey(Crag, null=True, on_delete=models.CASCADE)
+    nazwa_drogi = models.ForeignKey(Route, blank=True, on_delete=models.CASCADE, default="brak", null=True)
 
     def __str__(self):
         return f'{self.nazwa_filmu}'
