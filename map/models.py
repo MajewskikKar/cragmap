@@ -19,17 +19,28 @@ class Crag(models.Model):
         ('średni','20-100'),
         ('duży','>100')
     ]
-
+    
+    # Rodzaje = [
+    #     ('bd','uzupełnij'),
+    #     ('sport','Drogi sportowe'),
+    #     ('bulder','Bulder'),
+    #     ('trad','Trad'),
+    #     ('ścianka','Ścianka wspinaczkowa')
+    # ]
+    
     nazwa = models.CharField(max_length=100)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
     bulder = models.CharField(max_length=1, help_text="0 - droga, 1 - bulder, 2 - inne")
+    #bulder zmień na:
+    #rodzaj = models.Charfield(max_length=100, choices=rodzaj,default='bd')
     opis = models.TextField(default='uzupełnij', help_text="tutaj wpisz dłuższy opis miejsca")
     wyceny = models.CharField(max_length=15, choices=Trudnosci, default="bd")
     skala = models.CharField(max_length=100, default="uzupełnij", help_text="pojedyncza nazwa - np. piaskowiec, granit, wapień")
     wysokosc = models.DecimalField(max_digits=3, decimal_places=0, null=True, help_text="podaj bez przcecinków przybliżoną wysokość")
     ilość_dróg = models.CharField(max_length=10, choices=Ilosc_drog, default='bd')
-
+    #dodaj wiek skały
+    #wiek_skały = models.CharField(max_length=15, default='bd')
     def __str__(self):
         return self.nazwa
 
