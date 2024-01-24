@@ -20,8 +20,6 @@ class Crag(models.Model):
         ('duży','>100')
     ]
 
-
-
     nazwa = models.CharField(max_length=100)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
@@ -37,33 +35,24 @@ class Crag(models.Model):
 
 #linki do stron internetowych
 class Site(models.Model):
-
-    Strona = [
-        ('bd','uzupełnij'),
-        ('topo','Topo'),
-        ('blog','Blog'),
-        ('artykuł','Artykuł naukowy'),
-        ('inne','Inne')
-    ]
-
     nazwa_strony = models.CharField(max_length=100, help_text="Nazwa która będzie wyświetlała się w popupie")
-    #rodzaj_strony = models.CharField(max_length=50, default='uzupełnij', choices=Strona)
     link = models.URLField(max_length=200)
     ocena = models.CharField(max_length=1, help_text="skala od 1 do 5")
     crags = models.ForeignKey(Crag, null=True, on_delete=models.CASCADE)
-    class Meta:
-        ordering = ['-crags']
-    def __str__(self):
-        return f'{self.crags} {self.nazwa_strony}'
+
+class Route(models.Model):
+
+    nazwa_drogi = models.CharField(max_length=200, default="brak")
+    rejon = models.ForeignKey(Crag, on_delete=models.CASCADE, default="brak", null=True)
 
 class Movie(models.Model):
     nazwa_filmu = models.CharField(max_length=100, help_text="Nazwa która będzie wyświetlała się w popupie")
     link = models.URLField(max_length=200)
     crags = models.ForeignKey(Crag, null=True, on_delete=models.CASCADE)
-    class Meta:
-        ordering = ['-crags']
+    nazwa_drogi = models.ForeignKey(Route, blank=True, on_delete=models.CASCADE, default="brak", null=True)
+
     def __str__(self):
-        return f'{self.crags} {self.nazwa_filmu}'
+        return f'{self.nazwa_filmu}'
 
 #nazwy topo
 class Topo(models.Model):
@@ -73,4 +62,4 @@ class Topo(models.Model):
     crags = models.ForeignKey(Crag, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{self.crags} {self.nazwa_topo}'
+        return f'{self.nazwa_strony} {self.crags}'
