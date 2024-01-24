@@ -2,19 +2,16 @@ from django.shortcuts import render
 import folium
 from .models import Crag
 from folium.plugins import MarkerCluster
-from django.http import HttpResponse
 from django.template.loader import get_template, render_to_string
-from .filters import MapFilter
-
-
+from .filters import CragFilter
 #main site
 def index(request):
     popup_template = get_template('popups/popup1.html')
 
     #create map object
-    m = folium.Map(location = [51.8948, 19.6385],min_zoom =6, zoom_start=3)
-
-
+    m = folium.Map(location = [51.8948, 19.6385],min_zoom =6, zoom_start=3, width = '100%', height = '67%', max_bounds=True)
+    folium.plugins.Geocoder(add_marker=False, position="bottomright").add_to(m)
+    folium.plugins.Fullscreen(position="topright", title="pełny ekran", title_cancel="zamknij pełny ekran", force_separate_button=True).add_to(m)
     #store  feature groups
 
     feature_bulder= folium.FeatureGroup(name='Buldery')
@@ -79,7 +76,9 @@ def index(request):
     return(render(request, 'index.html', context))
 
 def szukaj(request):
-    all_crags = Crag.objects.all()
-    myfilter = MapFilter()
-    context = {'myfilter':myfilter,'all_crags':all_crags}
-    return (render(request, 'szukajka.html', context))
+    crag_filter = CragFilter(request.GET, queryset=Crag.objects.all())
+    context = {
+        'form': crag_filter.form,
+        'crags': crag_filter.qs
+    }
+    return render(request, 'szukaj.html', context)

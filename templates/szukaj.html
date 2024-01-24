@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<form method="GET" action="{% url 'szukaj' %}">
+    {{form.as_p }}
+    <input type="submit" value="szukaj" class="btn btn-primary"/>
+    <a href="{% url 'szukaj' %}">
+        <button type="button" class="btn btn-primary">wróć</button>
+    </a>
+</form>
+
+<hr/>
+<h1>Wyszukiwarka rejonów wspinaczkowych w Polsce</h1>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Nazwa</th>
+            <th>Rodzaj</th>
+            <th>Wyceny</th>
+            <th>Rodzaj skały</th>
+            <th>Ilość dróg</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for crag in crags %}
+        <tr>
+            <td>{{ crag.nazwa }}</td>
+            <td>{{ crag.bulder }}</td>
+            <td>{{ crag.wyceny }}</td>
+            <td>{{ crag.skala }}</td>
+            <td>{{ crag.get_ilość_dróg_display }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+
+    </table>
+{% endblock %}

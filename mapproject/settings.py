@@ -39,8 +39,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'map.apps.MapConfig',
     'import_export',
-    'django_filters'
+    'django_filters',
+    'dbbackup' #django backup
 ]
+
+
+DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
+DBBACKUP_STORAGE_OPTIONS = {'location': '/my/backup/dir/'}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
