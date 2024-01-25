@@ -31,7 +31,7 @@ def index(request):
         lat = item.latitude
         lon = item.longitude
         name = item.nazwa
-        bulder = item.bulder
+        rodzaj = item.rodzaj
         opis = item.opis
         wyceny = item.wyceny
         skala = item.skala
@@ -40,21 +40,21 @@ def index(request):
         google_maps = f'https://maps.google.com/?q={lon},{lat}'
         pogoda = f'https://openweathermap.org/weathermap?basemap=map&cities=false&layer=temperature&lat={{lat}}&lon={{lon}}&zoom=10'
 
-        popup_data = {'name':name, 'bulder':bulder,'opis':opis, 'wyceny':wyceny, 'skala':skala,
+        popup_data = {'name':name, 'rodzaj':rodzaj,'opis':opis, 'wyceny':wyceny, 'skala':skala,
                       'sites':strony_linki, 'movies':filmy_linki, 'google_maps':google_maps}
 
         #here we edit popups
         popup_text = render_to_string('popups/popup1.html', popup_data)
         #here we make markers
-        if bulder == '0': #marker for climbing routes
+        if rodzaj == Crag.Sport: #marker for climbing routes
             marker = folium.Marker([lon, lat], popup=popup_text, icon=folium.Icon(color="green", prefix = 'fa', icon='chain'),
                                    tooltip=name)
             marker.add_to(feature_drogi)
-        elif bulder == '1': #marker for boulders
+        elif rodzaj == Crag.Bulder: #marker for boulders
             marker = folium.Marker([lon, lat], popup=popup_text, icon=folium.Icon(color="red", prefix = 'fa', icon='chain'),
                                    tooltip=name)
             marker.add_to(feature_bulder)
-        elif bulder =='2': #marker for trad
+        elif rodzaj == Crag.Trad: #marker for trad
             marker = folium.Marker([lon, lat], popup=popup_text, icon=folium.Icon(color="orange", prefix = 'fa', icon='chain'),
                                    tooltip=name)
             marker.add_to(feature_trad)

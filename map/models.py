@@ -4,32 +4,66 @@ from django.db import models
 #klasa Crag jest główną, obsługującą punkty na mapie. Pozostałe klasy są relacyjne dla Crag.
 class Crag(models.Model):
 
+    #rodzaj miejsca
+    Bulder = "Bulder"
+    Sport = "Sport"
+    Trad = "Trad"
+    Scianka = "Scianka"
+    Inne = "Inne"
+    Bd = "Brak danych"
 
-    Trudnosci = [
-        ('bd', 'uzupełnij'),
-        ('łatwe', 'Łatwe'),
-        ('średnie', 'Średnie'),
-        ('trudne', 'Trudne'),
-        ('zróżnicowane', 'Zróżnicowane')
+    #ilosc dróg
+    Mala = "Mała"
+    Srednia = "Średnia"
+    Duza = "Duża"
+
+    #wyceny
+    Latwe = "Łatwe"
+    Srednie = "Średnie"
+    Trudne = "Trudne"
+    Zroznicowane = "Zróżnicowane"
+
+    rodzaj_choices =[
+        (Bulder, "bulder"),
+        (Sport, "drogi ubezpieczone"),
+        (Trad, "własna asekuracja"),
+        (Scianka, "ścianka wspinaczkowa"),
+        (Bd, "brak danych")
     ]
 
-    Ilosc_drog = [
-        ('bd','uzupełnij'),
-        ('mały','<20'),
-        ('średni','20-100'),
-        ('duży','>100')
+    ilosc_drog_choices = [
+        (Bd,'brak danych'),
+        (Mala,'<25'),
+        (Srednia,'25-100'),
+        (Duza,'>100')
     ]
+
+    wyceny_choices = [
+        (Bd,'brak danych'),
+        (Latwe, 'łatwe'),
+        (Srednie, 'średnie'),
+        (Trudne, 'trudne'),
+        (Zroznicowane, 'zróżnicowane')
+    ]
+
+
 
     nazwa = models.CharField(max_length=100)
+    rodzaj = models.CharField(max_length=100, choices=rodzaj_choices, null=True, default=Bd)
+    wysokosc = models.DecimalField(max_digits=3, decimal_places=0, null=True, help_text="podaj bez przcecinków przybliżoną wysokość")
+    ilosc_drog = models.CharField(max_length=15, choices=ilosc_drog_choices, default=Bd)
+    opis = models.TextField(max_length=1000, default='uzupełnij', help_text="tutaj wpisz dłuższy opis miejsca")
+    wyceny = models.CharField(max_length=15, choices=wyceny_choices, default="bd")
+    skala = models.CharField(max_length=30, default="uzupełnij", help_text="pojedyncza nazwa - np. piaskowiec, granit, wapień")
+    wiek_skal = models.CharField(max_length=100, default = '', blank=True)
+    facja = models.CharField(max_length=100, default = '', blank=True)
+    rejon = models.CharField(max_length=100, default = '', blank=True)
+    nazwa_alt = models.CharField(max_length=100, default = '', blank=True)
+    rodzaj_alt = models.CharField(max_length=100, choices=rodzaj_choices, null=True, default=Bd)
+    rejon_dod = models.CharField(max_length=100, default = '', blank=True)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
-    bulder = models.CharField(max_length=1, help_text="0 - droga, 1 - bulder, 2 - inne")
-    opis = models.TextField(default='uzupełnij', help_text="tutaj wpisz dłuższy opis miejsca")
-    wyceny = models.CharField(max_length=15, choices=Trudnosci, default="bd")
-    skala = models.CharField(max_length=100, default="uzupełnij", help_text="pojedyncza nazwa - np. piaskowiec, granit, wapień")
-    wysokosc = models.DecimalField(max_digits=3, decimal_places=0, null=True, help_text="podaj bez przcecinków przybliżoną wysokość")
-    ilość_dróg = models.CharField(max_length=10, choices=Ilosc_drog, default='bd')
-
+    bulder = models.CharField(max_length=100, default="Dsds")
     def __str__(self):
         return self.nazwa
 
@@ -40,16 +74,11 @@ class Site(models.Model):
     ocena = models.CharField(max_length=1, help_text="skala od 1 do 5")
     crags = models.ForeignKey(Crag, null=True, on_delete=models.CASCADE)
 
-class Route(models.Model):
-
-    nazwa_drogi = models.CharField(max_length=200, default="brak")
-    rejon = models.ForeignKey(Crag, on_delete=models.CASCADE, default="brak", null=True)
 
 class Movie(models.Model):
     nazwa_filmu = models.CharField(max_length=100, help_text="Nazwa która będzie wyświetlała się w popupie")
     link = models.URLField(max_length=200)
     crags = models.ForeignKey(Crag, null=True, on_delete=models.CASCADE)
-    nazwa_drogi = models.ForeignKey(Route, blank=True, on_delete=models.CASCADE, default="brak", null=True)
 
     def __str__(self):
         return f'{self.nazwa_filmu}'
