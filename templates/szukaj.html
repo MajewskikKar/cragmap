@@ -1,37 +1,80 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
 {% block content %}
+{% crispy form %}
+<div class="container mt-4">
+    <h1>Wyszukiwarka rejonów wspinaczkowych w Polsce</h1>
+    <div class="card">
+        <div class="card-body">
+            <form method="GET" action="{% url 'szukaj' %}" class="mb-4">
 
-<form method="GET" action="{% url 'szukaj' %}">
-    {{form.as_p }}
-    <input type="submit" value="szukaj" class="btn btn-primary"/>
-    <a href="{% url 'szukaj' %}">
-        <button type="button" class="btn btn-primary">wróć</button>
-    </a>
-</form>
 
-<hr/>
-<h1>Wyszukiwarka rejonów wspinaczkowych w Polsce</h1>
-    <table class="table">
-        <thead>
-        <tr>
-            <th>Nazwa</th>
-            <th>Rodzaj</th>
-            <th>Wyceny</th>
-            <th>Rodzaj skały</th>
-            <th>Ilość dróg</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for crag in crags %}
-        <tr>
-            <td>{{ crag.nazwa }}</td>
-            <td>{{ crag.rodzaj }}</td>
-            <td>{{ crag.wyceny }}</td>
-            <td>{{ crag.skala }}</td>
-            <td>{{ crag.get_ilosc_drog_display }}</td>
-        </tr>
-        {% endfor %}
-        </tbody>
 
-    </table>
+                <div class="form-inline">
+                    <label for="{{ form.nazwa.id_for_label }}">Nazwa:</label>
+                    {{ form.nazwa }}
+                </div>
+                    <br>
+                <div class="form-inline">
+                    <label for="{{ form.rodzaj.id_for_label }}">Rodzaj:</label>
+                    {{ form.rodzaj }}
+                </div>
+                    <br>
+               <div class="form-inline">
+                    <label for="{{ form.wysokosc.id_for_label }}">Wysokosc:</label>
+                    {{ form.wysokosc }}
+                </div>
+                    <br>
+                <div class="form-group">
+                    <label for="{{ form.wyceny.id_for_label }}">Wyceny:</label>
+                    {{ form.wyceny }}
+                </div>
+                    <br>
+                <div class="form-group">
+                    <label for="{{ form.skala.id_for_label }}">Rodzaj skały:</label>
+                    {{ form.skala }}
+                </div>
+                    <br>
+                <div class="form-group">
+                    <label for="{{ form.ilosc_drog.id_for_label }}">Ilość dróg:</label>
+                    {{ form.ilosc_drog }}
+                </div>
+                <br>
+
+
+
+
+                <button type="submit" class="btn btn-primary">Szukaj</button>
+                <a href="{% url 'szukaj' %}" class="btn btn-primary">Wróć</a>
+            </form>
+        </div>
+    </div>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nazwa</th>
+                    <th>Rodzaj</th>
+                    <th>Wysokość</th>
+                    <th>Wyceny</th>
+                    <th>Rodzaj skały</th>
+                    <th>Ilość dróg</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for crag in crags %}
+                    <tr>
+                        <td>{{ crag.nazwa }}</td>
+                        <td>{{ crag.rodzaj }}</td>
+                        <td>{{ crag.wysokosc }}</td>
+                        <td>{{ crag.wyceny }}</td>
+                        <td>{{ crag.skala }}</td>
+                        <td>{{ crag.ilosc_drog }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}

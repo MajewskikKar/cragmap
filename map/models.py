@@ -13,15 +13,25 @@ class Crag(models.Model):
     Bd = "Brak danych"
 
     #ilosc dróg
-    Mala = "Mała"
-    Srednia = "Średnia"
-    Duza = "Duża"
+    Mala = "<25"
+    Srednia = "25-100"
+    Duza = ">100"
 
     #wyceny
     Latwe = "Łatwe"
     Srednie = "Średnie"
     Trudne = "Trudne"
     Zroznicowane = "Zróżnicowane"
+
+    #skaly
+    Piaskowiec = "Piaskowiec"
+    Wapien = "Wapień"
+    Granit = "Granit"
+    Bazalt = "Bazalt"
+    Plastik = "Plastik"
+    Beton = "Beton"
+
+
 
     rodzaj_choices =[
         (Bulder, "bulder"),
@@ -46,7 +56,12 @@ class Crag(models.Model):
         (Zroznicowane, 'zróżnicowane')
     ]
 
-
+    skala_choices = [(Wapien, 'wapień'),
+                     (Piaskowiec, 'piaskowiec'),
+                     (Granit, 'granit'),
+                     (Bazalt, 'bazalt'),
+                     (Plastik, 'plastik'),
+                     (Beton, 'beton')]
 
     nazwa = models.CharField(max_length=100)
     rodzaj = models.CharField(max_length=100, choices=rodzaj_choices, null=True, default=Bd)
@@ -54,7 +69,7 @@ class Crag(models.Model):
     ilosc_drog = models.CharField(max_length=15, choices=ilosc_drog_choices, default=Bd)
     opis = models.TextField(max_length=1000, default='uzupełnij', help_text="tutaj wpisz dłuższy opis miejsca")
     wyceny = models.CharField(max_length=15, choices=wyceny_choices, default="bd")
-    skala = models.CharField(max_length=30, default="uzupełnij", help_text="pojedyncza nazwa - np. piaskowiec, granit, wapień")
+    skala = models.CharField(max_length=30, choices=skala_choices, default="bd")
     wiek_skal = models.CharField(max_length=100, default = '', blank=True)
     facja = models.CharField(max_length=100, default = '', blank=True)
     rejon = models.CharField(max_length=100, default = '', blank=True)
@@ -63,7 +78,6 @@ class Crag(models.Model):
     rejon_dod = models.CharField(max_length=100, default = '', blank=True)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
-    bulder = models.CharField(max_length=100, default="Dsds")
     def __str__(self):
         return self.nazwa
 

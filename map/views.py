@@ -4,6 +4,7 @@ from .models import Crag
 from folium.plugins import MarkerCluster
 from django.template.loader import get_template, render_to_string
 from .filters import CragFilter
+from .forms import CragNameFilterForm
 #main site
 def index(request):
     popup_template = get_template('popups/popup1.html')
@@ -65,7 +66,6 @@ def index(request):
 
     folium.LayerControl().add_to(m)
 
-
     #html representation of map
     m = m._repr_html_()
 
@@ -77,8 +77,9 @@ def index(request):
 
 def szukaj(request):
     crag_filter = CragFilter(request.GET, queryset=Crag.objects.all())
+
     context = {
-        'form': crag_filter.form,
-        'crags': crag_filter.qs
+        'form': CragNameFilterForm(),  #crag_filter.form,
+        'crags': crag_filter.qs.order_by('nazwa')
     }
     return render(request, 'szukaj.html', context)

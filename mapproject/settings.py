@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-w7di4$$6qqn_onsetumuqk@9%66m0czk8w9tf!)p-2x)vg$zqj
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["192.168.0.248", '127.0.0.1']
 
 
 # Application definition
@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'map.apps.MapConfig',
     'import_export',
     'django_filters',
-    'dbbackup' #django backup
+    'crispy_forms',
+    'crispy_bootstrap4'
 ]
 
 
@@ -129,3 +130,4 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
