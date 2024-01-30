@@ -1,10 +1,11 @@
-from django.shortcuts import render
 import folium
 from .models import Crag
 from folium.plugins import MarkerCluster
 from django.template.loader import get_template, render_to_string
 from .filters import CragFilter
 from .forms import CragNameFilterForm
+from django.shortcuts import get_object_or_404, render
+
 #main site
 def index(request):
     popup_template = get_template('popups/popup1.html')
@@ -83,3 +84,7 @@ def szukaj(request):
         'crags': crag_filter.qs.order_by('nazwa')
     }
     return render(request, 'szukaj.html', context)
+
+def miejsca(request, nazwa):
+    crag = get_object_or_404(Crag, pk=nazwa)
+    return render(request, 'miejsca.html', {'crag':crag})

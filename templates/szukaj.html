@@ -1,80 +1,96 @@
 {% extends 'base.html' %}
-{% load crispy_forms_tags %}
+
 
 {% block content %}
-{% crispy form %}
-<div class="container mt-4">
-    <h1>Wyszukiwarka rejonów wspinaczkowych w Polsce</h1>
+<div class="container">
+    <h3 class="text-center">Wyszukiwarka rejonów wspinaczkowych w Polsce</h3>
     <div class="card">
         <div class="card-body">
             <form method="GET" action="{% url 'szukaj' %}" class="mb-4">
-
-
-
-                <div class="form-inline">
-                    <label for="{{ form.nazwa.id_for_label }}">Nazwa:</label>
-                    {{ form.nazwa }}
+                <div class="row">
+                    <div class="col-md-6">
+                        <!-- First three forms go here -->
+                        <div class="form-inline">
+                            <label for="{{ form.nazwa.id_for_label }}">Nazwa:</label>
+                            {{ form.nazwa }}
+                        </div>
+                        <br>
+                        <div class="form-inline">
+                            <label for="{{ form.rodzaj.id_for_label }}">Rodzaj:</label>
+                            {{ form.rodzaj }}
+                        </div>
+                        <br>
+                        <div class="form-inline">
+                            <label for="{{ form.wysokosc_min.id_for_label }}">Wysokość:</label>
+                            {{ form.wysokosc_min }}
+                            {{ form.wysokosc_max }}
+                        </div>
+                        <br>
+                        <div class="form-inline">
+                            <label for="{{ form.wyceny.id_for_label }}">Wyceny:</label>
+                            {{ form.wyceny }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-inline">
+                            <label for="{{ form.ilosc_drog.id_for_label }}">Ilość dróg:</label>
+                            {{ form.ilosc_drog }}
+                        </div>
+                        <br>
+                        <div class="form-inline">
+                            <label for="{{ form.skala.id_for_label }}">Rodzaj skały:</label>
+                            {{ form.skala }}
+                        </div>
+                        <br>
+                        <div class="form-inline">
+                            <label for="{{ form.wiek_skal.id_for_label }}">Wiek skały:</label>
+                            {{ form.wiek_skal }}
+                        </div>
+                        <br>
+                        <div class="form-inline">
+                            <label for="{{ form.skala.id_for_label }}">Facja:</label>
+                            {{ form.facja }}
+                        </div>
+                    </div>
                 </div>
-                    <br>
-                <div class="form-inline">
-                    <label for="{{ form.rodzaj.id_for_label }}">Rodzaj:</label>
-                    {{ form.rodzaj }}
+                <!-- Place the buttons inside the main form -->
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-primary">Szukaj</button>
+                    <a href="{% url 'szukaj' %}" class="btn btn-primary">Wróć</a>
                 </div>
-                    <br>
-               <div class="form-inline">
-                    <label for="{{ form.wysokosc.id_for_label }}">Wysokosc:</label>
-                    {{ form.wysokosc }}
-                </div>
-                    <br>
-                <div class="form-group">
-                    <label for="{{ form.wyceny.id_for_label }}">Wyceny:</label>
-                    {{ form.wyceny }}
-                </div>
-                    <br>
-                <div class="form-group">
-                    <label for="{{ form.skala.id_for_label }}">Rodzaj skały:</label>
-                    {{ form.skala }}
-                </div>
-                    <br>
-                <div class="form-group">
-                    <label for="{{ form.ilosc_drog.id_for_label }}">Ilość dróg:</label>
-                    {{ form.ilosc_drog }}
-                </div>
-                <br>
-
-
-
-
-                <button type="submit" class="btn btn-primary">Szukaj</button>
-                <a href="{% url 'szukaj' %}" class="btn btn-primary">Wróć</a>
             </form>
         </div>
     </div>
-
-        <table class="table">
-            <thead>
+</div>
+<div class="container">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nazwa</th>
+                <th>Rodzaj</th>
+                <th>Wysokość</th>
+                <th>Wyceny</th>
+                <th>Rodzaj skały</th>
+                <th>Ilość dróg</th>
+                <th>Wiek</th>
+                <th>Facja</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for crag in crags %}
                 <tr>
-                    <th>Nazwa</th>
-                    <th>Rodzaj</th>
-                    <th>Wysokość</th>
-                    <th>Wyceny</th>
-                    <th>Rodzaj skały</th>
-                    <th>Ilość dróg</th>
+                    <td>{{ crag.nazwa }}</td>
+                    <td>{{ crag.rodzaj }}</td>
+                    <td>{{ crag.wysokosc }}</td>
+                    <td>{{ crag.wyceny }}</td>
+                    <td>{{ crag.skala }}</td>
+                    <td>{{ crag.ilosc_drog }}</td>
+                    <td>{{ crag.wiek_skaly }}</td>
+                    <td>{{ crag.facja }}</td>
                 </tr>
-            </thead>
-            <tbody>
-                {% for crag in crags %}
-                    <tr>
-                        <td>{{ crag.nazwa }}</td>
-                        <td>{{ crag.rodzaj }}</td>
-                        <td>{{ crag.wysokosc }}</td>
-                        <td>{{ crag.wyceny }}</td>
-                        <td>{{ crag.skala }}</td>
-                        <td>{{ crag.ilosc_drog }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 {% endblock %}
+

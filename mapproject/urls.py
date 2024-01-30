@@ -16,10 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from map import views as map_view
+from map import views
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', map_view.index, name='index'),
-    path('szukaj/', map_view.szukaj, name='szukaj')
+    path('', views.index, name='index'),
+    path('szukaj/', views.szukaj, name='szukaj'),
+    path('miejsca/<str:nazwa>', views.miejsca, name= "miejsca")
 
 ]
