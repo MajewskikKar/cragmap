@@ -1,5 +1,5 @@
 import folium
-from .models import Crag
+from .models import Crag, Site
 from folium.plugins import MarkerCluster
 from django.template.loader import get_template, render_to_string
 from .filters import CragFilter
@@ -86,5 +86,13 @@ def szukaj(request):
     return render(request, 'szukaj.html', context)
 
 def miejsca(request, nazwa):
-    crag = get_object_or_404(Crag, pk=nazwa)
-    return render(request, 'miejsca.html', {'crag':crag})
+    crag = get_object_or_404(Crag, nazwa=nazwa)
+    site = Site.objects.all()
+    context = {
+        'crag':crag,
+        'site':site
+    }
+    return render(request, 'miejsca.html', context)
+
+#def dodaj(request):
+    

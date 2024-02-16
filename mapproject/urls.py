@@ -23,4 +23,5 @@ urlpatterns = [
     path('szukaj/', views.szukaj, name='szukaj'),
     path('miejsca/<str:nazwa>', views.miejsca, name= "miejsca")
 
+
 ]

@@ -79,7 +79,7 @@
         <tbody>
             {% for crag in crags %}
                 <tr>
-                    <td>{{ crag.nazwa }}</td>
+                    <td><a href="{% url 'miejsca' nazwa=crag.nazwa %}">{{ crag.nazwa }}</a></td>
                     <td>{{ crag.rodzaj }}</td>
                     <td>{{ crag.wysokosc }}</td>
                     <td>{{ crag.wyceny }}</td>
