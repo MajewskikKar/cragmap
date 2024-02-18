@@ -30,6 +30,10 @@ class Crag(models.Model):
     Bazalt = "Bazalt"
     Plastik = "Plastik"
     Beton = "Beton"
+    Wapien_dolomit = "Wapień i dolomit"
+
+    #rejony
+    Jura = "Jura"
 
 
 
@@ -56,14 +60,26 @@ class Crag(models.Model):
         (Zroznicowane, 'zróżnicowane')
     ]
 
-    skala_choices = [(Wapien, 'wapień'),
-                     (Piaskowiec, 'piaskowiec'),
-                     (Granit, 'granit'),
-                     (Bazalt, 'bazalt'),
-                     (Plastik, 'plastik'),
-                     (Beton, 'beton')]
+    skala_choices = [
+        (Wapien, 'wapień'),
+        (Piaskowiec, 'piaskowiec'),
+        (Granit, 'granit'),
+        (Bazalt, 'bazalt'),
+        (Plastik, 'plastik'),
+        (Beton, 'beton')
+    ]
 
-    nazwa = models.CharField(max_length=100, unique=True)
+    rejon_choices = [
+        (
+        "Jura", (
+            ("północna", "Jura północna"),
+            ("środkowa", "Jura środkowa"),
+            ("południowa", "Jura południowa"),
+            ),
+        ),
+    ]
+
+    nazwa = models.CharField(max_length=100, unique=True, blank=True)
     rodzaj = models.CharField(max_length=100, choices=rodzaj_choices, null=True, default=Bd)
     wysokosc = models.DecimalField(max_digits=3, decimal_places=0, null=True, help_text="podaj bez przcecinków przybliżoną wysokość")
     ilosc_drog = models.CharField(max_length=15, choices=ilosc_drog_choices, default=Bd)
@@ -72,10 +88,9 @@ class Crag(models.Model):
     skala = models.CharField(max_length=30, choices=skala_choices, default="bd")
     wiek_skal = models.CharField(max_length=100, default = '', blank=True)
     facja = models.CharField(max_length=100, default = '', blank=True)
-    rejon = models.CharField(max_length=100, default = '', blank=True)
+    rejon = models.CharField(max_length=100, choices=rejon_choices, default = '', blank=True)
     nazwa_alt = models.CharField(max_length=100, default = '', blank=True)
-    rodzaj_alt = models.CharField(max_length=100, choices=rodzaj_choices, null=True, default=Bd)
-    rejon_dod = models.CharField(max_length=100, default = '', blank=True)
+    rodzaj_alt = models.CharField(max_length=100, choices=rodzaj_choices, null=True, default=Bd, blank=True)
     latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
     longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
     def __str__(self):
@@ -83,13 +98,56 @@ class Crag(models.Model):
 
 #linki do stron internetowych
 class Site(models.Model):
-    nazwa_strony = models.CharField(max_length=100, help_text="Nazwa która będzie wyświetlała się w popupie")
-    link = models.URLField(max_length=200)
-    ocena = models.CharField(max_length=1, help_text="skala od 1 do 5")
-    crags = models.ForeignKey(Crag, null=True, on_delete=models.CASCADE)
 
+    #linki
+    Crags27 = "27crags.com"
+    Wpinka = "wpinka.org"
+    A8 ="8a.nu"
+    Buldering = "buldering.pl"
+    Wikipedia = "wikipedia.org"
+    Thecrag = "thecrag.com"
+    Goryonline = "goryonline.com"
+    Portalgorski = "portalgorski.pl"
+    Inne = "inne"
+
+    #rodzaj strony
+    Topo ="topo"
+    Info = "info"
+    Artykul_zwykly = "artykuł"
+    Artykul_naukowy = "artykuł naukowy"
+    Blog = "blog"
+
+
+    linki_choices = [
+        (Crags27, "27crags.com"),
+        (Wpinka, "wpinka.org"),
+        (A8, "8a.nu"),
+        (Buldering, "buldering.pl"),
+        (Wikipedia, "wikipedia.org"),
+        (Thecrag, "thecrag.com"),
+        (Goryonline, "goryonline.com"),
+        (Portalgorski, "portalgorski.pl"),
+        (Inne, "inne")
+    ]
+    rodzaj_strony_choices= [
+        (Topo,"topo"),
+        (Info, "info"),
+        (Artykul_zwykly, "artykuł"),
+        (Artykul_naukowy, "artykuł naukowy"),
+        (Blog, "blog")
+    ]
+
+    strona = models.CharField(max_length=200, choices=linki_choices, default=Inne, help_text="wybierz jeśli jest na liście")
+    rodzaj_strony = models.CharField(max_length=100, choices=rodzaj_strony_choices, default = Inne)
+    tytul = models.CharField(max_length=100, help_text="Nazwa która będzie wyświetlała się w popupie", default = Inne)
+    polecane = models.BooleanField(default=False, verbose_name='zaznacz jesli polecana strona')
+    data = models.CharField(max_length=4, help_text="wpisz numer daty powstania linku jesli znasz", default='', blank=True)
+    link = models.URLField(max_length=300, default="")
+    crags = models.ForeignKey(Crag, null=True, on_delete=models.CASCADE)
+    class Meta:
+        ordering = ['-polecane', 'tytul']
     def __str__(self):
-        return f'{self.nazwa_strony}'
+        return f'{self.strona} {self.tytul}'
 
 class Movie(models.Model):
     nazwa_filmu = models.CharField(max_length=100, help_text="Nazwa która będzie wyświetlała się w popupie")
@@ -103,8 +161,9 @@ class Movie(models.Model):
 class Topo(models.Model):
 
     nazwa_topo = models.CharField(max_length=100, help_text="Nazwa która będzie wyświetlała się w popupie")
+    link = models.URLField(max_length=200, default="")
     autor = models.CharField(max_length=200)
-    crags = models.ForeignKey(Crag, null=True, on_delete=models.CASCADE)
+    crags = models.ManyToManyField(Crag)
 
     def __str__(self):
         return f'{self.nazwa_topo}'

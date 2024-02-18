@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-w7di4$$6qqn_onsetumuqk@9%66m0czk8w9tf!)p-2x)vg$zqj
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["192.168.0.248", "127.0.0.1"]
+ALLOWED_HOSTS = ['192.168.0.248', '127.0.0.1']
 
 
 # Application definition
@@ -83,12 +83,17 @@ WSGI_APPLICATION = 'mapproject.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": "mydatabase",
+    # 'default': {
+    #     "ENGINE": "django.db.backends.sqlite3",
+    #     "NAME": "mydatabase",
+    # },
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME":"cragmap_postgres",
+        "USER":"admin",
+        "PASSWORD":"admin"
+        },
     }
-}
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

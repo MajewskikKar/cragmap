@@ -1,71 +1,51 @@
 import folium
 from .models import Crag, Site
 from folium.plugins import MarkerCluster
-from django.template.loader import get_template, render_to_string
+from django.template.loader import  render_to_string
 from .filters import CragFilter
 from .forms import CragNameFilterForm
 from django.shortcuts import get_object_or_404, render
+from .utils import crag_items, marker_colour, feature_group
 
-#main site
 def index(request):
-    popup_template = get_template('popups/popup1.html')
 
     #create map object
-    m = folium.Map(location = [51.8948, 19.6385],min_zoom =6, zoom_start=3, width = '100%', height = '67%', max_bounds=True)
+    m = folium.Map(location = [51.8948, 19.6385],min_zoom =6, zoom_start=3, width = '100%', height = '70%', max_bounds=True)
     folium.plugins.Geocoder(add_marker=False, position="bottomright").add_to(m)
     folium.plugins.Fullscreen(position="topright", title="pełny ekran", title_cancel="zamknij pełny ekran", force_separate_button=True).add_to(m)
     #store  feature groups
 
-    feature_bulder= folium.FeatureGroup(name='Buldery')
+    feature_bulder = folium.FeatureGroup(name='Buldery')
     feature_drogi = folium.FeatureGroup(name='Wspinanie sportowe')
     feature_trad = folium.FeatureGroup(name='Trad')
+    feature_scianka = folium.FeatureGroup(name='Scianka')
 
-
-    #marker cluster
-
-
-    #marker_cluster = MarkerCluster().add_to(m)
 
     crags = Crag.objects.all()
     for item in crags:
 
-        #here we store values
-        lat = item.latitude
-        lon = item.longitude
-        name = item.nazwa
-        rodzaj = item.rodzaj
-        opis = item.opis
-        wyceny = item.wyceny
-        skala = item.skala
-        strony_linki = item.site_set.all() #from related table Site
-        filmy_linki = item.movie_set.all()
-        google_maps = f'https://maps.google.com/?q={lon},{lat}'
-        pogoda = f'https://openweathermap.org/weathermap?basemap=map&cities=false&layer=temperature&lat={{lat}}&lon={{lon}}&zoom=10'
+        lat, lon, name, rodzaj, opis, wyceny, skala, strony_linki, filmy_linki, topo, google_maps = crag_items(item)
 
         popup_data = {'name':name, 'rodzaj':rodzaj,'opis':opis, 'wyceny':wyceny, 'skala':skala,
-                      'sites':strony_linki, 'movies':filmy_linki, 'google_maps':google_maps}
+                      'sites':strony_linki, 'movies':filmy_linki, 'google_maps':google_maps, 'topos':topo}
 
         #here we edit popups
         popup_text = render_to_string('popups/popup1.html', popup_data)
+
         #here we make markers
-        if rodzaj == Crag.Sport: #marker for climbing routes
-            marker = folium.Marker([lon, lat], popup=popup_text, icon=folium.Icon(color="green", prefix = 'fa', icon='chain'),
-                                   tooltip=name)
-            marker.add_to(feature_drogi)
-        elif rodzaj == Crag.Bulder: #marker for boulders
-            marker = folium.Marker([lon, lat], popup=popup_text, icon=folium.Icon(color="red", prefix = 'fa', icon='chain'),
-                                   tooltip=name)
-            marker.add_to(feature_bulder)
-        elif rodzaj == Crag.Trad: #marker for trad
-            marker = folium.Marker([lon, lat], popup=popup_text, icon=folium.Icon(color="orange", prefix = 'fa', icon='chain'),
-                                   tooltip=name)
-            marker.add_to(feature_trad)
+
+        marker = folium.Marker([lon, lat], popup=popup_text, icon=folium.Icon(color=marker_colour(rodzaj), prefix = 'fa', icon='chain'),tooltip=name)
+        feature_group(marker,rodzaj,feature_bulder,feature_drogi,feature_trad, feature_scianka)
 
     feature_bulder.add_to(m)
     feature_drogi.add_to(m)
     feature_trad.add_to(m)
+    feature_scianka.add_to(m)
 
     folium.LayerControl().add_to(m)
+
+    # html_to_insert = "<style>.leaflet-popup-content-wrapper, .leaflet-popup.tip {background: linear-gradient(to bottom, #f95959 10%, #ffffff 150%) !important; }</style>"
+    # m.get_root().header.add_child(folium.Element(html_to_insert))
 
     #html representation of map
     m = m._repr_html_()
@@ -94,5 +74,17 @@ def miejsca(request, nazwa):
     }
     return render(request, 'miejsca.html', context)
 
-#def dodaj(request):
-    
+def dodaj(request):
+
+    return render(request, 'dodaj/dodaj_base.html')
+
+def dodaj_site(request):
+
+    return render(request, 'dodaj/dodaj_site.html')
+
+def dodaj_movie(request):
+
+    return render(request, 'dodaj/dodaj_movie.html')
+def info(request):
+
+    return render(request, 'info.html')

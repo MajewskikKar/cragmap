@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{{crag.nazwa}}
+{{crag.pk}}
+
+{% for s in site %}
+    {{ s.nazwa_strony }}
+{% endfor %}
+
+{% endblock %}

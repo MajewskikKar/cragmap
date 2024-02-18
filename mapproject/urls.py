@@ -21,6 +21,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='index'),
     path('szukaj/', views.szukaj, name='szukaj'),
+    path('dodaj/', views.dodaj, name='dodaj'),
+    path('site/', views.dodaj, name='dodaj_site'),
+    path('movie/', views.dodaj, name='dodaj_movie'),
+    path('info/', views.info, name='info'),
     path('miejsca/<str:nazwa>', views.miejsca, name= "miejsca")
 
 
