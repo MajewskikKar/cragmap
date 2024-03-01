@@ -49,22 +49,13 @@
                             <label for="{{ form.skala.id_for_label }}">Rodzaj skały:</label>
                             {{ form.skala }}
                         </div>
-                        <br>
-                        <div class="form-inline">
-                            <label for="{{ form.wiek_skal.id_for_label }}">Wiek skały:</label>
-                            {{ form.wiek_skal }}
-                        </div>
-                        <br>
-                        <div class="form-inline">
-                            <label for="{{ form.skala.id_for_label }}">Facja:</label>
-                            {{ form.facja }}
-                        </div>
+
                     </div>
                 </div>
-                <!-- Place the buttons inside the main form -->
+
                 <div class="text-center mt-4">
                     <button type="submit" class="btn btn-primary">Szukaj</button>
-                    <a href="{% url 'szukaj' %}" class="btn btn-primary">Wróć</a>
+                    <a href="{% url 'szukaj' %}" class="btn btn-primary">Wyczyść</a>
                 </div>
             </form>
         </div>
@@ -93,7 +84,7 @@
                     <td>{{ crag.wyceny }}</td>
                     <td>{{ crag.skala }}</td>
                     <td>{{ crag.ilosc_drog }}</td>
-                    <td>{{ crag.wiek_skaly }}</td>
+                    <td>{{ crag.wiek_skal }}</td>
                     <td>{{ crag.facja }}</td>
                 </tr>
             {% endfor %}

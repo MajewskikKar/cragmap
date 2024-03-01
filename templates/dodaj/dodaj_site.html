@@ -1,6 +1,12 @@
-{% extends 'base.html' %}
+{% extends 'dodaj/dodaj_base.html' %}
 
 {% block content %}
-gfdfggddfgdfg
-gfddffgdg
+
+<form action="/your-name/" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit">
+</form>
+
+
 {% endblock %}

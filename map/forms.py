@@ -1,8 +1,9 @@
 
-from .models import Crag
+from .models import Crag, Site
 from django import forms
 
 class CragNameFilterForm(forms.Form):
+
     nazwa = forms.CharField(label='Nazwa', required=False)
     rodzaj = forms.ChoiceField(choices=[('', '---------')] + list(Crag.rodzaj_choices), label='Rodzaj', required=False)
     wyceny = forms.ChoiceField(choices=[('', '---------')] + list(Crag.wyceny_choices), label='Wyceny', required=False)
@@ -12,3 +13,12 @@ class CragNameFilterForm(forms.Form):
     wysokosc_max = forms.IntegerField(widget=forms.TextInput(attrs={'placeholder': 'do', 'style': 'width: 50px;'}),label='Wysokość do', required=False)
     wiek_skal = forms.CharField(label='Wiek skał', required=False)
     facja = forms.CharField(label='Facja', required=False)
+
+class AddSite(forms.Form):
+
+    strona = forms.CharField(label='Nazwa', required=False)
+    rodzaj_strony = forms.CharField(label='Nazwa', required=False)
+    tytul = forms.CharField(label='Nazwa', required=False)
+    data = forms.CharField(label='Nazwa', required=False)
+    link = forms.CharField(label='Nazwa', required=False)
+    crags = forms.CharField(label='Nazwa', required=False)

@@ -13,9 +13,9 @@ class Crag(models.Model):
     Bd = "Brak danych"
 
     #ilosc dróg
-    Mala = "<25"
-    Srednia = "25-100"
-    Duza = ">100"
+    Mala = "Mała"
+    Srednia = "Średnia"
+    Duza = "Duża"
 
     #wyceny
     Latwe = "Łatwe"
@@ -24,13 +24,14 @@ class Crag(models.Model):
     Zroznicowane = "Zróżnicowane"
 
     #skaly
-    Piaskowiec = "Piaskowiec"
-    Wapien = "Wapień"
-    Granit = "Granit"
-    Bazalt = "Bazalt"
-    Plastik = "Plastik"
-    Beton = "Beton"
-    Wapien_dolomit = "Wapień i dolomit"
+    Piaskowiec = "piaskowce"
+    Wapien = "wapienie"
+    Granit = "granity"
+    Bazalt = "bazalty"
+    Plastik = "plastik"
+    Beton = "beton"
+    Wapien_dolomit = "wapienie i dolomity"
+    Gnejs = "gnejsy"
 
     #rejony
     Jura = "Jura"
@@ -38,26 +39,28 @@ class Crag(models.Model):
 
 
     rodzaj_choices =[
-        (Bulder, "bulder"),
-        (Sport, "drogi ubezpieczone"),
-        (Trad, "własna asekuracja"),
-        (Scianka, "ścianka wspinaczkowa"),
+        (Bulder, "Bulder"),
+        (Sport, "Drogi ubezpieczone"),
+        (Trad, "Własna asekuracja"),
+        (Scianka, "Ścianka wspinaczkowa"),
         (Bd, "brak danych")
     ]
 
     ilosc_drog_choices = [
-        (Bd,'brak danych'),
+
         (Mala,'<25'),
         (Srednia,'25-100'),
-        (Duza,'>100')
+        (Duza,'>100'),
+        (Bd,'brak danych'),
     ]
 
     wyceny_choices = [
-        (Bd,'brak danych'),
+
         (Latwe, 'łatwe'),
         (Srednie, 'średnie'),
         (Trudne, 'trudne'),
-        (Zroznicowane, 'zróżnicowane')
+        (Zroznicowane, 'zróżnicowane'),
+        (Bd,'brak danych'),
     ]
 
     skala_choices = [
@@ -66,7 +69,8 @@ class Crag(models.Model):
         (Granit, 'granit'),
         (Bazalt, 'bazalt'),
         (Plastik, 'plastik'),
-        (Beton, 'beton')
+        (Beton, 'beton'),
+        (Gnejs, 'gnejs')
     ]
 
     rejon_choices = [
@@ -81,7 +85,7 @@ class Crag(models.Model):
 
     nazwa = models.CharField(max_length=100, unique=True, blank=True)
     rodzaj = models.CharField(max_length=100, choices=rodzaj_choices, null=True, default=Bd)
-    wysokosc = models.DecimalField(max_digits=3, decimal_places=0, null=True, help_text="podaj bez przcecinków przybliżoną wysokość")
+    wysokosc = models.DecimalField(max_digits=5, decimal_places=0, null=True, help_text="podaj bez przcecinków przybliżoną wysokość")
     ilosc_drog = models.CharField(max_length=15, choices=ilosc_drog_choices, default=Bd)
     opis = models.TextField(max_length=1000, default='uzupełnij', help_text="tutaj wpisz dłuższy opis miejsca")
     wyceny = models.CharField(max_length=15, choices=wyceny_choices, default="bd")
@@ -91,8 +95,8 @@ class Crag(models.Model):
     rejon = models.CharField(max_length=100, choices=rejon_choices, default = '', blank=True)
     nazwa_alt = models.CharField(max_length=100, default = '', blank=True)
     rodzaj_alt = models.CharField(max_length=100, choices=rodzaj_choices, null=True, default=Bd, blank=True)
-    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True)
+    latitude = models.FloatField(null=True)
+    longitude = models.FloatField(null=True)
     def __str__(self):
         return self.nazwa
 
@@ -153,7 +157,7 @@ class Movie(models.Model):
     nazwa_filmu = models.CharField(max_length=100, help_text="Nazwa która będzie wyświetlała się w popupie")
     link = models.URLField(max_length=200)
     crags = models.ForeignKey(Crag, null=True, on_delete=models.CASCADE)
-
+    data = models.CharField(max_length=4, help_text="wpisz numer daty powstania linku jesli znasz", default='', blank=True)
     def __str__(self):
         return f'{self.nazwa_filmu}'
 

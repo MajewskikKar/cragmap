@@ -1,70 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Crag Map</title>
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 
-    <!-- Bootstrap Icons CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <style>
-        .div-1 {
-            background-color: #9fd3c7;
-        }
-        h2 {
-            text-align: center;
-            color: white;
-            margin-right: 40px;
-            margin-left: 20px;
-        }
-        .nav-items-properties {
-            font-size: 19px;
-            margin-right: 10px;
-        }
-        .nav-items-properties1{
-            font-size: 19px;
-            position: absolute;
-            right: 70px;
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
-        }
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
 
-    </style>
+  <title>WspinMapa</title>
+  <style>
+
+  .nav-item{
+      color: black !important;
+    }
+  h2 {
+      text-align: center;
+      color: white;
+      margin-right: 40px;
+      margin-left: 20px;
+  }
+</style>
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark ">
-        <h2> WspinMap <i class="bi bi-globe"></i></h2>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav ">
-                <li class="nav-item ">
-                    <a class="nav-link nav-items-properties" href="{% url 'index' %}">Mapa</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link nav-items-properties" href="{% url 'szukaj' %}">Szukaj</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link nav-items-properties" href="{% url 'dodaj' %}">Dodaj</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link nav-items-properties1" href="{% url 'info' %}">Info</a>
-                </li>
-            </ul>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <h2> WspinMapa <i class="fas fa-globe-europe"></i></h2>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="{% url 'index' %}" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Mapa
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="nav-item nav-link" href="{% url 'index' %}">Miejsca</a>
+          <a class="nav-item nav-link" href="{% url 'mapa_skaly' %}">Skały</a>
+          <a class="nav-item nav-link" href="{% url 'mapa_wyceny' %}">Wyceny</a>
         </div>
-    </nav>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'szukaj' %}">Szukajka</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'dodaj' %}">Dodaj</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'info' %}">Info</a>
+      </li>
+    </ul>
+  </div>
+</nav>
 
-    <div id="content">
-        {% block content %}{% endblock %}
-    </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-QGV3JDNdAhCFkvjQEp3dA7D8HQvvh/9H9QzU8eLZG6qBNEz5Ld5BxZTkFVfQ8shU" crossorigin="anonymous"></script>
+      {% block content %}{% endblock %}
+
+
 </body>
 </html>
