@@ -97,6 +97,8 @@ class Crag(models.Model):
     rodzaj_alt = models.CharField(max_length=100, choices=rodzaj_choices, null=True, default=Bd, blank=True)
     latitude = models.FloatField(null=True)
     longitude = models.FloatField(null=True)
+    class Meta:
+        ordering = ['nazwa']
     def __str__(self):
         return self.nazwa
 

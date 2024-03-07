@@ -5,8 +5,10 @@ from django.template.loader import  render_to_string
 from .filters import CragFilter
 from .forms import CragNameFilterForm, AddSite
 from django.shortcuts import get_object_or_404, render
-from .utils import crag_items, marker_colour, feature_group
+from .utils import crag_items, marker_color_rodzaj, feature_group_rodzaj, marker_color_skala, feature_group_skala
 from django.http import HttpResponseRedirect
+from django.contrib import messages
+
 
 def index(request):
 
@@ -35,8 +37,8 @@ def index(request):
 
         #here we make markers
 
-        marker = folium.Marker([lon, lat], popup=popup_text, icon=folium.Icon(color=marker_colour(rodzaj), prefix = 'fa', icon='chain'),tooltip=name)
-        feature_group(marker,rodzaj,feature_bulder,feature_drogi,feature_trad, feature_scianka)
+        marker = folium.Marker([lon, lat], popup=popup_text, icon=folium.Icon(color=marker_color_rodzaj(rodzaj), prefix = 'fa', icon='chain'),tooltip=name)
+        feature_group_rodzaj(marker,rodzaj,feature_bulder,feature_drogi,feature_trad, feature_scianka)
 
     feature_bulder.add_to(m)
     feature_drogi.add_to(m)
@@ -88,9 +90,10 @@ def dodaj_site(request):
         # check whether it's valid:
         if form.is_valid():
             # process the data in form.cleaned_data as required
-            # ...
+            messages.add_message(request, messages.INFO, "Dodane")
+            form.save()
             # redirect to a new URL:
-            return HttpResponseRedirect("dodaj/")
+            return HttpResponseRedirect("/site/")
 
     # if a GET (or any other method) we'll create a blank form
     else:
@@ -113,10 +116,13 @@ def mapa_skaly(request):
     folium.plugins.Fullscreen(position="topright", title="pełny ekran", title_cancel="zamknij pełny ekran", force_separate_button=True).add_to(m)
     #store  feature groups
 
-    feature_bulder = folium.FeatureGroup(name='Buldery')
-    feature_drogi = folium.FeatureGroup(name='Wspinanie sportowe')
-    feature_trad = folium.FeatureGroup(name='Trad')
-    feature_scianka = folium.FeatureGroup(name='Scianka')
+    feature_wapien = folium.FeatureGroup(name='Wapień')
+    feature_piaskowiec = folium.FeatureGroup(name='Piaskowiec')
+    feature_granit = folium.FeatureGroup(name='Granit')
+    feature_bazalt = folium.FeatureGroup(name='Bazalt')
+    feature_gnejs = folium.FeatureGroup(name='Gnejs')
+    feature_beton = folium.FeatureGroup(name='Beton')
+    feature_plastik = folium.FeatureGroup(name='Plastik')
     # marker_cluster = MarkerCluster().add_to(m)
 
     crags = Crag.objects.all()
@@ -131,14 +137,32 @@ def mapa_skaly(request):
         popup_text = render_to_string('popups/popup1.html', popup_data)
 
         #here we make markers
+        #
+        marker = folium.Marker([lon, lat], popup=popup_text, icon=folium.Icon(color=marker_color_skala(skala), prefix = 'fa', icon='hammer'),tooltip=name)
 
-        marker = folium.Marker([lon, lat], popup=popup_text, icon=folium.Icon(color=marker_colour(rodzaj), prefix = 'fa', icon='chain'),tooltip=name)
-        feature_group(marker,rodzaj,feature_bulder,feature_drogi,feature_trad, feature_scianka)
+        if skala == Crag.Piaskowiec:
+            marker.add_to(feature_piaskowiec)
+        elif skala == Crag.Wapien:
+            marker.add_to(feature_wapien)
+        elif skala == Crag.Granit:
+            marker.add_to(feature_granit)
+        elif skala == Crag.Plastik:
+            marker.add_to(feature_plastik)
+        elif skala == Crag.Beton:
+            marker.add_to(feature_beton)
+        elif skala == Crag.Gnejs:
+            marker.add_to(feature_gnejs)
+        elif skala == Crag.Bazalt:
+            marker.add_to(feature_bazalt)
+        #feature_group_skala(marker,rodzaj,feature_wapien,feature_piaskowiec,feature_granit, feature_plastik,feature_gnejs,feature_beton, feature_bazalt)
 
-    feature_bulder.add_to(m)
-    feature_drogi.add_to(m)
-    feature_trad.add_to(m)
-    feature_scianka.add_to(m)
+    feature_wapien.add_to(m)
+    feature_piaskowiec.add_to(m)
+    feature_granit.add_to(m)
+    feature_plastik.add_to(m)
+    feature_beton.add_to(m)
+    feature_bazalt.add_to(m)
+    feature_gnejs.add_to(m)
 
     folium.LayerControl().add_to(m)
     #html representation of map

@@ -1,6 +1,7 @@
 
 from .models import Crag, Site
 from django import forms
+from django.forms import ModelForm
 
 class CragNameFilterForm(forms.Form):
 
@@ -14,11 +15,7 @@ class CragNameFilterForm(forms.Form):
     wiek_skal = forms.CharField(label='Wiek skał', required=False)
     facja = forms.CharField(label='Facja', required=False)
 
-class AddSite(forms.Form):
-
-    strona = forms.CharField(label='Nazwa', required=False)
-    rodzaj_strony = forms.CharField(label='Nazwa', required=False)
-    tytul = forms.CharField(label='Nazwa', required=False)
-    data = forms.CharField(label='Nazwa', required=False)
-    link = forms.CharField(label='Nazwa', required=False)
-    crags = forms.CharField(label='Nazwa', required=False)
+class AddSite(ModelForm):
+    class Meta:
+        model = Site
+        fields = ['strona','rodzaj_strony','link']
