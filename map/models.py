@@ -1,6 +1,6 @@
 from django.db import models
-
-
+from django.contrib.auth.models import User
+from urllib import parse
 #klasa Crag jest główną, obsługującą punkty na mapie. Pozostałe klasy są relacyjne dla Crag.
 class Crag(models.Model):
 
@@ -36,6 +36,7 @@ class Crag(models.Model):
     #rejony
     Jura = "Jura"
 
+    #wiek
 
 
     rodzaj_choices =[
@@ -75,7 +76,7 @@ class Crag(models.Model):
 
     rejon_choices = [
         (
-        "Jura", (
+        "Jura północna", (
             ("północna", "Jura północna"),
             ("środkowa", "Jura środkowa"),
             ("południowa", "Jura południowa"),
@@ -90,13 +91,14 @@ class Crag(models.Model):
     opis = models.TextField(max_length=1000, default='uzupełnij', help_text="tutaj wpisz dłuższy opis miejsca")
     wyceny = models.CharField(max_length=15, choices=wyceny_choices, default="bd")
     skala = models.CharField(max_length=30, choices=skala_choices, default="bd")
-    wiek_skal = models.CharField(max_length=100, default = '', blank=True)
-    facja = models.CharField(max_length=100, default = '', blank=True)
-    rejon = models.CharField(max_length=100, choices=rejon_choices, default = '', blank=True)
-    nazwa_alt = models.CharField(max_length=100, default = '', blank=True)
+    wiek_skal = models.CharField(max_length=100, unique=False, blank=True)
+    facja = models.CharField(max_length=100, unique=False,  blank=True)
+    rejon = models.CharField(max_length=100, choices=rejon_choices, default='', blank=True)
+    nazwa_alt = models.CharField(max_length=100, default='', blank=True)
     rodzaj_alt = models.CharField(max_length=100, choices=rodzaj_choices, null=True, default=Bd, blank=True)
     latitude = models.FloatField(null=True)
     longitude = models.FloatField(null=True)
+
     class Meta:
         ordering = ['nazwa']
     def __str__(self):
@@ -107,13 +109,14 @@ class Site(models.Model):
 
     #linki
     Crags27 = "27crags.com"
-    Wpinka = "wpinka.org"
+    Wspinka = "wspinka.org"
     A8 ="8a.nu"
     Buldering = "buldering.pl"
     Wikipedia = "wikipedia.org"
     Thecrag = "thecrag.com"
     Goryonline = "goryonline.com"
     Portalgorski = "portalgorski.pl"
+    Wspinanie = "wspinanie.pl"
     Inne = "inne"
 
     #rodzaj strony
@@ -126,13 +129,14 @@ class Site(models.Model):
 
     linki_choices = [
         (Crags27, "27crags.com"),
-        (Wpinka, "wpinka.org"),
+        (Wspinka, "wpinka.org"),
         (A8, "8a.nu"),
         (Buldering, "buldering.pl"),
         (Wikipedia, "wikipedia.org"),
         (Thecrag, "thecrag.com"),
         (Goryonline, "goryonline.com"),
         (Portalgorski, "portalgorski.pl"),
+        (Wspinanie, "wspinanie.pl"),
         (Inne, "inne")
     ]
     rodzaj_strony_choices= [
@@ -143,23 +147,28 @@ class Site(models.Model):
         (Blog, "blog")
     ]
 
+    date_choices = [(i,i) for i in range(1995,2024)]
+
+    link = models.URLField(max_length=300, default="")
     strona = models.CharField(max_length=200, choices=linki_choices, default=Inne, help_text="wybierz jeśli jest na liście")
     rodzaj_strony = models.CharField(max_length=100, choices=rodzaj_strony_choices, default = Inne)
-    tytul = models.CharField(max_length=100, help_text="Nazwa która będzie wyświetlała się w popupie", default = Inne)
+    tytul = models.CharField(max_length=100, help_text="Nazwa która będzie wyświetlała się w popupie", blank=True, default="")
     polecane = models.BooleanField(default=False, verbose_name='zaznacz jesli polecana strona')
-    data = models.CharField(max_length=4, help_text="wpisz numer daty powstania linku jesli znasz", default='', blank=True)
-    link = models.URLField(max_length=300, default="")
-    crags = models.ForeignKey(Crag, null=True, on_delete=models.CASCADE)
+    data = models.IntegerField(choices=date_choices, help_text="wybierz rok powstania strony", blank=True, null=True)
+    crags = models.ManyToManyField(Crag, default='Ambona')
+    is_approved = models.BooleanField(default=False)
     class Meta:
         ordering = ['-polecane', 'tytul']
     def __str__(self):
         return f'{self.strona} {self.tytul}'
 
 class Movie(models.Model):
+
     nazwa_filmu = models.CharField(max_length=100, help_text="Nazwa która będzie wyświetlała się w popupie")
-    link = models.URLField(max_length=200)
-    crags = models.ForeignKey(Crag, null=True, on_delete=models.CASCADE)
-    data = models.CharField(max_length=4, help_text="wpisz numer daty powstania linku jesli znasz", default='', blank=True)
+    link = models.URLField(max_length=200, default="", unique=True)
+    data = models.CharField(max_length=4, help_text="wpisz numer daty powstania linku jesli znasz", default='', blank=True, null=True)
+    crags = models.ForeignKey(Crag, on_delete=models.CASCADE, default='')
+    is_approved = models.BooleanField(default=False)
     def __str__(self):
         return f'{self.nazwa_filmu}'
 
@@ -173,3 +182,13 @@ class Topo(models.Model):
 
     def __str__(self):
         return f'{self.nazwa_topo}'
+
+class Comment(models.Model):
+
+    box = models.TextField()
+    crags = models.ForeignKey(Crag, on_delete=models.CASCADE, default='')
+    date_added = models.DateTimeField(auto_now_add=True, blank=True)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'{self.author} {self.date_added}'

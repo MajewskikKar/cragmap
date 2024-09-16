@@ -1,16 +1,17 @@
+
 import folium
-from .models import Crag, Site
-from folium.plugins import MarkerCluster
+from .models import Crag, Site, Movie, Comment
+from folium.plugins import MarkerCluster, FloatImage
 from django.template.loader import  render_to_string
 from .filters import CragFilter
-from .forms import CragNameFilterForm, AddSite
+from .forms import CragNameFilterForm, AddSite, AddMovie
 from django.shortcuts import get_object_or_404, render
-from .utils import crag_items, marker_color_rodzaj, feature_group_rodzaj, marker_color_skala, feature_group_skala
+from .utils import crag_items, marker_color_rodzaj, feature_group_rodzaj, marker_color_skala, feature_group_wyceny, marker_icon
 from django.http import HttpResponseRedirect
 from django.contrib import messages
-
-
+from urllib.parse import urlparse
 def index(request):
+
 
     #create map object
     m = folium.Map(location = [51.8948, 19.6385],min_zoom =6, zoom_start=3, width = '100%', height = '70%', max_bounds=True)
@@ -22,40 +23,53 @@ def index(request):
     feature_drogi = folium.FeatureGroup(name='Wspinanie sportowe')
     feature_trad = folium.FeatureGroup(name='Trad')
     feature_scianka = folium.FeatureGroup(name='Scianka')
-    # marker_cluster = MarkerCluster().add_to(m)
+    marker_cluster = MarkerCluster(name="Wszystko").add_to(m)
+
+
+
 
     crags = Crag.objects.all()
     for item in crags:
 
-        lat, lon, name, rodzaj, opis, wyceny, skala, strony_linki, filmy_linki, topo, google_maps = crag_items(item)
+        lat, lon, name, rodzaj, opis, wyceny, skala, strony_linki, filmy_linki, topo, google_maps, ilosc_drog, wiek_skal, wysokosc = crag_items(item)
 
-        popup_data = {'name':name, 'rodzaj':rodzaj,'opis':opis, 'wyceny':wyceny, 'skala':skala,
-                      'sites':strony_linki, 'movies':filmy_linki, 'google_maps':google_maps, 'topos':topo}
+        strona_alt = []
+        for site in strony_linki:
+            parsed_url = urlparse(site.link)
+            link_alt = parsed_url.netloc[4:]
+            strona_alt.append({'link':site.link, 'rodzaj_strony':site.rodzaj_strony, 'tytul':site.tytul,
+                               'link_alt':link_alt, 'polecane':site.polecane, 'is_approved':site.is_approved, 'strona':site.strona})
+
+        popup_data = { 'name':name, 'rodzaj':rodzaj, 'opis':opis, 'wyceny':wyceny, 'skala':skala,
+                      'sites':strona_alt, 'movies':filmy_linki, 'google_maps':google_maps , 'wiek_skal':wiek_skal,
+                      'ilosc_drog':ilosc_drog, 'wysokosc':wysokosc}
 
         #here we edit popups
         popup_text = render_to_string('popups/popup1.html', popup_data)
 
         #here we make markers
 
-        marker = folium.Marker([lon, lat], popup=popup_text, icon=folium.Icon(color=marker_color_rodzaj(rodzaj), prefix = 'fa', icon='chain'),tooltip=name)
+        marker = folium.Marker([lon, lat], popup=popup_text, icon=folium.Icon(color=marker_color_rodzaj(rodzaj), prefix = 'fa', icon=marker_icon(ilosc_drog)),tooltip=name)
         feature_group_rodzaj(marker,rodzaj,feature_bulder,feature_drogi,feature_trad, feature_scianka)
 
-    feature_bulder.add_to(m)
-    feature_drogi.add_to(m)
-    feature_trad.add_to(m)
-    feature_scianka.add_to(m)
 
-    folium.LayerControl().add_to(m)
+
+    feature_bulder.add_to(m).add_to(marker_cluster)
+    feature_drogi.add_to(m).add_to(marker_cluster)
+    feature_trad.add_to(m).add_to(marker_cluster)
+    feature_scianka.add_to(m).add_to(marker_cluster)
+
+    folium.LayerControl(collapsed=False).add_to(m)
     # html_to_insert = "<style>.leaflet-popup-content-wrapper, .leaflet-popup.tip {background: linear-gradient(to bottom, #f95959 10%, #ffffff 150%) !important; }</style>"
     # m.get_root().header.add_child(folium.Element(html_to_insert))
-
+    m.fit_bounds([[52.193636, -2.221575], [52.636878, -1.139759]])
     #html representation of map
+
     m = m._repr_html_()
 
     context = {
         'm':m,
     }
-
     return(render(request, 'index.html', context))
 
 def szukaj(request):
@@ -70,17 +84,18 @@ def szukaj(request):
     return render(request, 'szukaj.html', context)
 
 def miejsca(request, nazwa):
+
     crag = get_object_or_404(Crag, nazwa=nazwa)
-    site = Site.objects.all()
+    site = Site.objects.filter(crags=crag)
+    movie = Movie.objects.filter(crags=crag)
+    comment = Comment.objects.filter(crags=crag)
     context = {
-        'crag':crag,
-        'site':site
+        'crags':crag,
+        'sites':site,
+        'movies':movie,
+        'comments':comment
     }
     return render(request, 'miejsca.html', context)
-
-def dodaj(request):
-
-    return render(request, 'dodaj/dodaj_base.html')
 
 def dodaj_site(request):
 
@@ -90,20 +105,33 @@ def dodaj_site(request):
         # check whether it's valid:
         if form.is_valid():
             # process the data in form.cleaned_data as required
-            messages.add_message(request, messages.INFO, "Dodane")
+            messages.add_message(request, messages.SUCCESS, "Dodane! Link czeka na zatwierdzenie przez administratora.")
             form.save()
             # redirect to a new URL:
             return HttpResponseRedirect("/site/")
-
+        else:
+            messages.add_message(request, messages.ERROR, "Link został już dodany")
     # if a GET (or any other method) we'll create a blank form
     else:
         form = AddSite()
+
 
     return render(request, 'dodaj/dodaj_site.html', {"form": form})
 
 def dodaj_movie(request):
 
-    return render(request, 'dodaj/dodaj_movie.html')
+    if request.method == "POST":
+        form = AddMovie(request.POST)
+        if form.is_valid():
+            messages.add_message(request, messages.SUCCESS, "Dodane! Link czeka na zatwierdzenie przez administratora.")
+            form.save()
+            return HttpResponseRedirect("/movie/")
+        else:
+            messages.add_message(request, messages.ERROR, "Link został już dodany")
+    else:
+        form = AddMovie()
+    return render(request, 'dodaj/dodaj_movie.html', {"form": form})
+
 
 def info(request):
 
@@ -128,10 +156,10 @@ def mapa_skaly(request):
     crags = Crag.objects.all()
     for item in crags:
 
-        lat, lon, name, rodzaj, opis, wyceny, skala, strony_linki, filmy_linki, topo, google_maps = crag_items(item)
+        lat, lon, name, rodzaj, opis, wyceny, skala, strony_linki, filmy_linki, topo, google_maps, ilosc_drog, wiek_skal, wysokosc = crag_items(item)
 
-        popup_data = {'name':name, 'rodzaj':rodzaj,'opis':opis, 'wyceny':wyceny, 'skala':skala,
-                      'sites':strony_linki, 'movies':filmy_linki, 'google_maps':google_maps, 'topos':topo}
+        popup_data = {'name':name, 'rodzaj':rodzaj,'opis':opis, 'wyceny':wyceny, 'skala':skala, 'wiek_skal':wiek_skal,
+                      'sites':strony_linki, 'movies':filmy_linki, 'google_maps':google_maps, 'topos':topo, 'ilosc_drog':ilosc_drog, 'wysokosc':wysokosc}
 
         #here we edit popups
         popup_text = render_to_string('popups/popup1.html', popup_data)
@@ -154,7 +182,6 @@ def mapa_skaly(request):
             marker.add_to(feature_gnejs)
         elif skala == Crag.Bazalt:
             marker.add_to(feature_bazalt)
-        #feature_group_skala(marker,rodzaj,feature_wapien,feature_piaskowiec,feature_granit, feature_plastik,feature_gnejs,feature_beton, feature_bazalt)
 
     feature_wapien.add_to(m)
     feature_piaskowiec.add_to(m)
@@ -164,12 +191,12 @@ def mapa_skaly(request):
     feature_bazalt.add_to(m)
     feature_gnejs.add_to(m)
 
-    folium.LayerControl().add_to(m)
+    folium.LayerControl(collapsed=False).add_to(m)
     #html representation of map
     m = m._repr_html_()
 
     context = {
-        'm':m,
+        'm_skaly':m,
     }
 
     return(render(request, 'mapy/mapa_skaly.html', context))
@@ -181,34 +208,35 @@ def mapa_wyceny(request):
     folium.plugins.Fullscreen(position="topright", title="pełny ekran", title_cancel="zamknij pełny ekran", force_separate_button=True).add_to(m)
     #store  feature groups
 
-    feature_bulder = folium.FeatureGroup(name='Buldery')
-    feature_drogi = folium.FeatureGroup(name='Wspinanie sportowe')
-    feature_trad = folium.FeatureGroup(name='Trad')
-    feature_scianka = folium.FeatureGroup(name='Scianka')
+    feature_latwe = folium.FeatureGroup(name='Łatwe')
+    feature_srednie = folium.FeatureGroup(name='Średnie')
+    feature_trudne = folium.FeatureGroup(name='trudne')
+    feature_zroznicowane = folium.FeatureGroup(name='zroznicowane')
     # marker_cluster = MarkerCluster().add_to(m)
 
     crags = Crag.objects.all()
     for item in crags:
 
-        lat, lon, name, rodzaj, opis, wyceny, skala, strony_linki, filmy_linki, topo, google_maps = crag_items(item)
+        lat, lon, name, rodzaj, opis, wyceny, skala, strony_linki, filmy_linki, topo, google_maps, ilosc_drog, wiek_skal, wysokosc = crag_items(item)
 
-        popup_data = {'name':name, 'rodzaj':rodzaj,'opis':opis, 'wyceny':wyceny, 'skala':skala,
-                      'sites':strony_linki, 'movies':filmy_linki, 'google_maps':google_maps, 'topos':topo}
+        popup_data = {'name':name, 'rodzaj':rodzaj,'opis':opis, 'wyceny':wyceny, 'skala':skala,'wiek_skal':wiek_skal,
+                      'sites':strony_linki, 'movies':filmy_linki, 'google_maps':google_maps,
+                      'topos':topo, 'ilosc_drog':ilosc_drog, 'wysokosc':wysokosc}
 
         #here we edit popups
         popup_text = render_to_string('popups/popup1.html', popup_data)
 
         #here we make markers
 
-        marker = folium.Marker([lon, lat], popup=popup_text, icon=folium.Icon(color=marker_colour(rodzaj), prefix = 'fa', icon='chain'),tooltip=name)
-        feature_group(marker,rodzaj,feature_bulder,feature_drogi,feature_trad, feature_scianka)
+        marker = folium.Marker([lon, lat], popup=popup_text, icon=folium.Icon(color=marker_color_rodzaj(rodzaj), prefix = 'fa', icon='paperclip'),tooltip=name)
+        feature_group_wyceny(marker, wyceny, feature_latwe, feature_srednie, feature_trudne,feature_zroznicowane)
 
-    feature_bulder.add_to(m)
-    feature_drogi.add_to(m)
-    feature_trad.add_to(m)
-    feature_scianka.add_to(m)
+    feature_latwe.add_to(m)
+    feature_srednie.add_to(m)
+    feature_trudne.add_to(m)
+    feature_zroznicowane.add_to(m)
 
-    folium.LayerControl().add_to(m)
+    folium.LayerControl(collapsed=False).add_to(m)
     #html representation of map
     m = m._repr_html_()
 

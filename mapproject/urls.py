@@ -21,7 +21,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='index'),
     path('szukaj/', views.szukaj, name='szukaj'),
-    path('dodaj/', views.dodaj, name='dodaj'),
     path('site/', views.dodaj_site, name='dodaj_site'),
     path('movie/', views.dodaj_movie, name='dodaj_movie'),
     path('info/', views.info, name='info'),

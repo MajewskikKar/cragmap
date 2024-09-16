@@ -1,12 +1,120 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<style>
+    html, body {
+        margin: 0;
+        padding:0;
+        background-color: #FFF8DC
+        height: 100%
+    }
+    .header {
+        margin-top: 100px;
+    }
+    .contstyle {
+        font-family: verdana;
+        font-size: 12px;
+        border-radius: 25px;
+        background: rgba(95, 158, 160, 0.7)
+    }
+   .background {
+       background-image: url("/static/img/miejsca_foto.jpg");
+       background-size: cover; /* Ensures the background image covers the entire container */
+       background-position: center; /* Centers the background image */
+       background-repeat: no-repeat; /* Prevents the background image from repeating */
+   }
 
-{{crag.nazwa}}
-{{crag.pk}}
+    .tablestyle {
+        text-align: top;
+        align-items: top;
+    }
 
-{% for s in site %}
-    {{ s.nazwa_strony }}
-{% endfor %}
+
+
+
+    .side-background {
+        background-color: white;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        width: calc((100% - 1200px) / 2); /* Calculate the width of the side background */
+        z-index: -1; /* Push it behind the content */
+    }
+
+   .background_div {
+       background-color: rgba(	128,128,128,0.75);
+       padding:20px;
+       border-radius: 20px;
+       display: flex;
+       justify-content: flex-start;
+       align-items: flex-start;
+       text-align: center;
+       font-family: 'Courier New', monospace;
+       color: white;
+       text-shadow: black 1px 0 10px;
+       margin-bottom: 20px;
+       margin-top: 20px;
+   }
+   .background_div_movie {
+       background-color: rgba(	220,20,60,0.75);
+       padding:20px;
+       border-radius: 20px;
+       display: flex;
+       justify-content: flex-start;
+       align-items: flex-start;
+       text-align: center;
+       font-family: 'Courier New', monospace;
+       color: white;
+       text-shadow: black 1px 0 10px;
+       margin-bottom: 20px;
+       margin-top: 20px;
+   }
+</style>
+<body class="background">
+    <div class ="header">
+
+        {% if sites %}
+        <div class="col-md-8 offset-md-2 background_div">
+            <table class="table tablestyle">
+                <th>Opis</th>
+                <th>Data</th>
+                <th>Rodzaj strony</th>
+                <th>Link</th>
+                <tbody>
+                    {% for site in sites %}
+                    <tr>
+                 <td>{{ site.tytul }}</td>
+                {% if site.data %}
+                    <td>{{ site.data }}</td>
+                {% else %}
+                    <td></td>
+                {% endif %}
+                        <td>{{ site.rodzaj_strony }}</td>
+                        <td><a href={{ site.link }}>{{ site.strona }}</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        {% if movies %}
+        <div class="col-md-8 offset-md-2 background_div_movie">
+            <table class="table tablestyle">
+                <th>Data</th>
+                <th>Link</th>
+                <tbody>
+                    {% for movie in movies %}
+                    <tr>
+                        <td>{{ movie.data }}</td>
+                        <td><a href={{ movie.link }}>{{ movie.nazwa_filmu }}</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</body>
 
 {% endblock %}

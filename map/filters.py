@@ -11,7 +11,9 @@ class CragFilter(django_filters.FilterSet):
     wyceny = django_filters.CharFilter(field_name='wyceny', lookup_expr='exact', label='Wyceny')
     skala = django_filters.ChoiceFilter(field_name='skala', choices=Crag.skala_choices, label='Rodzaj skały')
     ilosc_drog = django_filters.ChoiceFilter(field_name='ilosc_drog', choices=Crag.ilosc_drog_choices, label='Ilość dróg')
+    wiek_skal = django_filters.CharFilter(field_name='wiek_skal', lookup_expr='icontains')
+    facja = django_filters.CharFilter(field_name='facja', lookup_expr='icontains')
 
     class Meta:
         model = Crag
-        fields = ['nazwa','rodzaj','wysokosc','wyceny','skala', 'ilosc_drog']
+        fields = ['nazwa','rodzaj','wysokosc','wyceny','skala', 'ilosc_drog','wiek_skal','facja']
